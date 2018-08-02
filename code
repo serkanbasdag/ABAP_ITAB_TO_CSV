@@ -1,0 +1,36 @@
+    PERFORM GET_FILE.
+
+    CALL FUNCTION 'SAP_CONVERT_TO_CSV_FORMAT'
+     EXPORTING
+       I_FIELD_SEPERATOR          = p_ayrac
+      TABLES
+        I_TAB_SAP_DATA             = gt_data
+     CHANGING
+       I_TAB_CONVERTED_DATA       = gt_csv_data.
+
+    CALL FUNCTION 'GUI_DOWNLOAD'
+      EXPORTING
+        FILENAME                        = GV_FILENAME
+      TABLES
+        DATA_TAB                        = gt_csv_data .
+
+
+*&---------------------------------------------------------------------*
+*&      Form  GET_FILE
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM GET_FILE .
+CLEAR GV_FILENAME.
+
+DATA: LV_DESKTOP TYPE STRING.
+
+CALL METHOD CL_GUI_FRONTEND_SERVICES=>GET_DESKTOP_DIRECTORY
+  CHANGING
+    DESKTOP_DIRECTORY  =  LV_DESKTOP.
+CALL METHOD CL_GUI_CFW=>FLUSH.
+CONCATENATE LV_DESKTOP '\exceldata.csv' INTO GV_FILENAME.
+ENDFORM.
